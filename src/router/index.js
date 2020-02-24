@@ -161,6 +161,7 @@ export const constantRoutes = [
       }
     ]
   },
+  { path: '/test', hidden: true, component: () => import('@/views/test.vue') },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
