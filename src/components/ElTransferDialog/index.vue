@@ -14,24 +14,12 @@
       :modal="true"
       @closed="$emit('update:visible', false)"
     >
-      <div slot="title">
-        <el-form :inline="true" :model="queryForm" class="demo-form-inline" size="mini" label-width="80px">
-          <el-form-item label="货品编号">
-            <el-input v-model="queryForm.ProductID_ProductCode" placeholder="货品编号" />
-          </el-form-item>
-          <el-form-item label="货品名称">
-            <el-input v-model="queryForm.ProductID_ProductName" placeholder="货品名称" />
-          </el-form-item>
-          <el-form-item label="货品类别">
-            <el-input v-model="queryForm.ProductID_ProductCategoryID_Name" placeholder="货品类别" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" :loading="remoteLoading" @click="onSubmit">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
 
       <div v-loading="remoteLoading">
+        <div slot="title">
+          <el-query-panel :fields="fields" @search="onSearch" />
+        </div>
+
         <el-table
           ref="source"
           :data="sourceTable"
@@ -108,11 +96,12 @@
 </template>
 
 <script>
+import ElQueryPanel from '@/components/ElQueryPanel'
 import request from '@/utils/request'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
   name: 'ElTransferDialog',
-  components: { Pagination },
+  components: { Pagination, ElQueryPanel },
   props: {
     visible: Boolean
   },
@@ -120,11 +109,11 @@ export default {
     return {
       innerVisible: this.visible,
       remoteLoading: false,
-      queryForm: {
-        ProductID_ProductCode: '',
-        ProductID_ProductName: '',
-        ProductID_ProductCategoryID_Name: ''
-      },
+      fields: [
+        { field: 'ProductID_ProductCode', title: '货品编号' },
+        { field: 'ProductID_ProductName', title: '货品名称' },
+        { field: 'ProductID_ProductCategoryID_Name', title: '货品类别' }
+      ],
       sourceTable: [],
       choiceTable: [],
       listQuery: {
@@ -164,10 +153,13 @@ export default {
       // console.log(data)
       this.fetchData()
     },
+    onSearch({ data }) {
+      // this.listQuery.condition = Object.assign([], data)
+      this.fetchData()
+    },
     fetchData() {
       this.remoteLoading = true
       const ps = Object.assign({}, this.listQuery)
-      ps.condition = Object.assign({}, this.queryForm)
       request({
         url: 'http://localhost:8090/api/MaterialStock',
         params: ps

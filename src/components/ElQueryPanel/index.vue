@@ -1,171 +1,171 @@
 <template>
   <div class="query-panel-container">
-    <div class="query-field">
-      <el-select
-        v-model="value"
-        placeholder="请选择"
-        :size="size"
-        @change="handleChange"
-      >
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </div>
-    <div v-show="Logics.length>1" class="query-logic">
-      <el-select v-model="logic" placeholder="请选择" :size="size">
-        <el-option
-          v-for="item in Logics"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </div>
-    <div class="query-value">
-      <el-date-picker v-if="option && option.type==='date'" v-model="input4" :size="size" type="date" placeholder="选择日期" />
-      <el-input v-else v-model="input4" placeholder="请输入内容" :size="size" clearable>
-        <!-- <i slot="prefix" class="el-input__icon el-icon-search" /> -->
-      </el-input>
-    </div>
+    <el-form :inline="true" :model="advSearchForm" class="demo-form-inline" :size="size">
+      <el-form-item>
+        <el-query-item :field-list="Fields" :param="param" /></el-form-item>
+      <el-form-item>
+        <el-button-group style="vertical-align:inherit;">
+          <el-button type="primary" plain icon="el-icon-search" @click="onSubmit">查询</el-button>
+          <el-button type="primary" :size="size" plain icon="el-icon-more" @click="showAdvanceForm" />
+        </el-button-group>
+      </el-form-item>
+    </el-form>
+
+    <el-dialog
+      title="高级查询"
+      :visible.sync="dialogVisible"
+      width="460px"
+    >
+      <el-form :model="advSearchForm" :size="size">
+        <el-form-item>
+          <el-select v-model="advSearchForm.logicOption" placeholder="逻辑关系" :size="size" style="width:100px;">
+            <el-option
+              v-for="item in logicOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-button
+            :disabled="advSearchForm.params.length>=10"
+            icon="el-icon-plus"
+            :size="size"
+            @click="addParam"
+          />
+          <el-button
+            :disabled="advSearchForm.params.length===0"
+            type="info"
+            :size="size"
+            plain
+            @click="clearAllText"
+          >清空所有值</el-button>
+          <el-button
+            :disabled="advSearchForm.params.length<=1"
+            type="info"
+            :size="size"
+            plain
+            @click="advSearchForm.params.splice(1,advSearchForm.params.length)"
+          >删除所有条件</el-button>
+        </el-form-item>
+        <!-- <transition-group name="fade"> -->
+        <el-form-item v-for="(item,index) in advSearchForm.params" :key="index">
+          <div style="display:flex;vertical-align:inherit;">
+            <el-query-item :field-list="Fields" :param="item" />
+
+            <el-button v-show="index>0" type="text" icon="el-icon-close" :size="size" @click="delParam(index)" />
+          </div>
+        </el-form-item>
+        <!-- </transition-group> -->
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button :size="size" @click="dialogVisible = false">取 消</el-button>
+
+        <el-button type="primary" :size="size" icon="el-icon-search" @click="onSubmit">查 询</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-const LogicEnum =
-   {
-     Equal: 1,
-     Like: 2,
-     GreaterThan: 4,
-     GreaterThanOrEqual: 8,
-     LessThan: 16,
-     LessThanOrEqual: 32,
-     In: 64,
-     NotIn: 128,
-     // / <summary>
-     // / ***%
-     // / </summary>
-     LikeLeft: 256,
-     // / <summary>
-     // / %***
-     // / </summary>
-     LikeRight: 512,
-     NoEqual: 1024,
-     IsNullOrEmpty: 2048,
-     IsNot: 4096,
-     NoLike: 8192
-   }
-const LogicEnumDesc =
-   {
-     Equal: '等于',
-     Like: '包含',
-     GreaterThan: '大于',
-     GreaterThanOrEqual: '大于等于',
-     LessThan: '小于',
-     LessThanOrEqual: '小于等于',
-     //  In: 64,
-     //  NotIn: 128,
-     // / <summary>
-     // / ***%
-     // / </summary>
-     LikeLeft: '左包含',
-     // / <summary>
-     // / %***
-     // / </summary>
-     LikeRight: '右包含',
-     NoEqual: '不等于',
-     IsNullOrEmpty: '空',
-     //  IsNot: 4096,
-     NoLike: '不包含'
-   }
+import ElQueryItem from './ElQueryItem'
+
+const param = {
+  field: '',
+  logic: 0,
+  value: ''
+}
+
+const fieldOption = {
+  field: '', // 查询字段
+  title: '', // 查询字段的描述名称
+  // value: '', // 查询值
+  // logic: '', // 查询逻辑
+  logics: 0, // 字段允许的查询逻辑 枚举类型
+  fieldType: '' // 字段类型
+}
+
 export default {
   name: 'ElQueryPanel',
+  components: { ElQueryItem },
   props: {
-
-  },
-  data() {
-    return {
-      size: 'small',
-      input4: '',
-      options: [{
-        value: 'ProductID_ProductCode',
-        label: '货品编号',
-        logics: 1,
-        type: 'string'
-      }, {
-        value: 'ProductID_ProductName',
-        label: '货品名称',
-        logics: 2 + 4 + 8,
-        type: 'date'
-      }, {
-        value: 'ProductID_ProductCategoryID_Name',
-        label: '货品类别',
-        type: 'string'
-      }, {
-        value: 'ProductID_ProductCategoryID_Name1',
-        label: '货品类别货品类别',
-        type: 'string'
-      }],
-      value: '',
-      logics: [],
-      logic: ''
-    }
-  },
-  computed: {
-    option() {
-      let o = {}
-      this.options.some(item => {
-        if (item.value === this.value) {
-          o = item
-          return true
-        }
-      })
-      return o
-    },
-    Logics() {
-      const arr = []
-      const logics = this.option.logics
-      // console.log(logics)
-      this.logics.forEach(item => {
-        // console.log(item.value)
-        if (!logics || ((logics & item.value) === item.value)) {
-          arr.push(Object.assign({}, item))
-        }
-      })
-      return arr
-    }
-  },
-  created() {
-    for (const key in LogicEnum) {
-      if (LogicEnumDesc.hasOwnProperty(key)) {
-        this.logics.push({ value: LogicEnum[key], label: LogicEnumDesc[key] })
+    fields: {
+      type: Array,
+      default() {
+        return []
       }
     }
   },
+  data() {
+    return {
+      advSearchForm: {
+        logicOption: 0,
+        params: []
+      },
+      dialogVisible: false,
+      size: 'small',
+      logicOptions: [
+        { value: 0, label: '并且' },
+        { value: 1, label: '或者' }
+      ],
+      param: Object.assign({}, param),
+      logics: []
+    }
+  },
+  computed: {
+    // 根据传入的fields 重新组合一次查询字段
+    Fields() {
+      return this.fields.map(item => {
+        return Object.assign({}, fieldOption, item)
+      })
+    }
+  },
+  created() {
+  },
   methods: {
-    handleChange() {
-      console.log('change')
-      this.input4 = ''
-      this.logic = this.Logics[0].value
+    // 点击查询按钮
+    onSubmit() {
+      const params = []
+      if (this.dialogVisible) {
+        Object.assign(params, this.advSearchForm.params)
+        this.dialogVisible = false
+      } else {
+        params.push(Object.assign({}, this.param))
+      }
+      // console.log()
+      this.$emit('search', { data: params })
+    },
+    // 显示高级查询
+    showAdvanceForm() {
+      this.dialogVisible = true
+      if (this.advSearchForm.params.length === 0) {
+        this.addParam()
+      }
+    },
+    // 添加参数
+    addParam() {
+      this.advSearchForm.params.push(
+        Object.assign({}, param)
+      )
+    },
+    // 删除参数
+    delParam(index) {
+      this.advSearchForm.params.splice(index, 1)
+    },
+    // 删除所有的值
+    clearAllText() {
+      this.advSearchForm.params.forEach(item => {
+        item.value = ''
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .query-panel-container{
-    display: flex;
-    .query-field {
-      width: 100px;
-    }
-    .query-logic {
-      width: 100px;
-    }
-    .query-value{
-      width: 200px;
-    }
-  }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 </style>
