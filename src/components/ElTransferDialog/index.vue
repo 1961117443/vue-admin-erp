@@ -42,8 +42,6 @@
           <af-table-column min-width="100" prop="BatNo" label="批号" />
           <af-table-column min-width="100" prop="MaterialWareHouseID_Name" label="库位" />
           <af-table-column min-width="100" prop="Quantity" label="库存数量" />
-        <!-- <af-table-column min-width="100" prop="Price" label="单价" />
-        <af-table-column width="100" prop="Amount" label="金额" /> -->
         </el-table>
 
         <div class="transfer-controls">
@@ -61,10 +59,10 @@
             />
           </div>
           <pagination
-            v-show="listQuery.total>0"
-            :total="listQuery.total"
-            :page.sync="listQuery.page"
-            :limit.sync="listQuery.limit"
+            v-show="queryParam.total>0"
+            :total="queryParam.total"
+            :page.sync="queryParam.page"
+            :limit.sync="queryParam.limit"
             @pagination="getList"
           />
         </div>
@@ -116,7 +114,7 @@ export default {
       ],
       sourceTable: [],
       choiceTable: [],
-      listQuery: {
+      queryParam: {
         total: 0,
         page: 1,
         limit: 20
@@ -154,18 +152,18 @@ export default {
       this.fetchData()
     },
     onSearch({ data }) {
-      // this.listQuery.condition = Object.assign([], data)
+      // this.queryParam.condition = Object.assign([], data)
       this.fetchData()
     },
     fetchData() {
       this.remoteLoading = true
-      const ps = Object.assign({}, this.listQuery)
+      const ps = Object.assign({}, this.queryParam)
       request({
         url: 'http://localhost:8090/api/MaterialStock',
         params: ps
       }).then(res => {
         if (res.data) {
-          this.listQuery.total = res.data.total
+          this.queryParam.total = res.data.total
           this.sourceTable = res.data.data
         }
       }).finally(() => {
