@@ -86,61 +86,53 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err')
+    console.log(error.config)
     // console.log('err' + error) // for debug
     if (error.response) {
       // 未授权：
       // 首先用refresh_token获取新的token,然后再发起请求
       // 如果refresh_token也过期了，直接跳转到登录页面
       if (error.response.status === 401) {
-        // return new Promise((resolve, reject) => {
-        //   error.config.headers.Authorization = `Bearer ${getRefreshToken()}`
-        //   axios(error.config).then(res => {
-        //     resolve(res.data)
-        //   }).catch(err => {
-        //     reject(err)
-        //   })
-        // })
-        // 这里是可以的 1
-        // error.config.headers.Authorization = `Bearer ${getRefreshToken()}`
-        // return Promise.resolve(axios(error.config).then(res => {
-        //   return res.data
-        // }))
-        // 这里是可以的 1
+        const refresh_token = getRefreshToken()
         return new Promise((resolve, reject) => {
-          axios.get('api/user/refresh-token', {
+          return axios.get('api/user/refresh-token', {
             baseURL: 'http://localhost:8090',
             params: {
               token: getToken()
             },
             headers: {
-              Authorization: `Bearer ${getRefreshToken()}`
+              Authorization: `Bearer ${refresh_token}`
             }
           }).then(res => {
-            console.log(res)
             // 获取到新的token
-            if (res.data && res.data.token) {
+            if (res.data && res.data.data) {
+              console.log('获取到新的token,重新发起请求')
               // 设置新的token 然后重新发起请求
-              const token = res.data.token
+              const token = res.data.data
               console.log('refresh-token:ok')
               store.dispatch('user/resetToken', token)
+              error.config.__isRetryRequest = true
               error.config.headers.Authorization = `Bearer ${token}`
-              axios(error.config).then(res => {
+              return axios(error.config).then(res => {
                 resolve(res.data)
               })
             } else {
               // console.log('error1')
-              store.dispatch('user/resetToken')
-              toLogin()
-              reject()
+              return store.dispatch('user/resetToken').then(() => {
+                toLogin()
+                // reject()
+              })
             }
           }).catch(err => {
             if (err.response) {
               // 还是未授权状态 跳转至登录页面
               if (err.response.status === 401) {
+                console.log('refresh_token也过期了，只好重新登录:' + refresh_token)
+                console.log(err.response)
                 toLogin()
               }
             }
+            reject()
           })
         })
       }
@@ -157,7 +149,13 @@ service.interceptors.response.use(
 )
 
 const toLogin = function() {
-  console.log(`/login?redirect=${router.app.$route.fullPath}`)
-  router.push(router.app.$route.fullPath)
+  let path = router.app.$route.fullPath
+  if (path !== '/') {
+    path = `/login?redirect=${router.app.$route.fullPath}`
+  } else {
+    path = `/login`
+  }
+  console.log(path)
+  router.push(path)
 }
 export default service

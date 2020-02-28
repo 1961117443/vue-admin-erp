@@ -89,39 +89,39 @@ const materialRouters = {
     },
     {
       path: 'useout',
-      name: 'MaterialOut',
+      name: 'MaterialUseOut',
       component: () => import('@/views/material/useout/index'),
-      meta: { icon: 'table', tableName: 'MaterialSalesOut', title: '领用出库' },
+      meta: { icon: 'table', tableName: 'MaterialUseOutStore', title: '领用出库' },
       children: [
-        {
-          path: 'list',
-          component: () => import('@/views/material/useout/list'),
-          name: 'ListMaterialSalesOut',
-          meta: {
-            title: '销售出库',
-            keepAlive: true // 需要被缓存
-          },
-          hidden: true
-        },
+        // {
+        //   path: 'list',
+        //   component: () => import('@/views/material/useout/list'),
+        //   name: 'ListMaterialUseOutStore',
+        //   meta: {
+        //     title: '销售出库',
+        //     keepAlive: true // 需要被缓存
+        //   },
+        //   hidden: true
+        // },
         {
           path: 'create',
           component: () => import('@/views/material/useout/components/CreatePostForm'),
-          name: 'CreateMaterialSalesOut',
-          meta: { title: '新增销售出库', icon: 'edit', activeMenu: '/material/useout', moduleState: 'add' },
+          name: 'CreateMaterialUseOutStore',
+          meta: { title: '新增领用出库', icon: 'edit', activeMenu: '/material/useout', moduleState: 'add' },
           hidden: true
         },
         {
           path: 'edit/:id',
           component: () => import('@/views/material/useout/components/CreatePostForm'),
-          name: 'EditMaterialSalesOut',
-          meta: { title: '编辑销售出库', noCache: true, activeMenu: '/material/useout', moduleState: 'edit' },
+          name: 'EditMaterialUseOutStore',
+          meta: { title: '编辑领用出库', noCache: true, activeMenu: '/material/useout', moduleState: 'edit' },
           hidden: true
         },
         {
           path: 'browse/:id',
           component: () => import('@/views/material/useout/components/CreatePostForm'),
-          name: 'BrowseMaterialSalesOut',
-          meta: { title: '浏览销售出库', noCache: true, activeMenu: '/material/useout', moduleState: 'browse' },
+          name: 'BrowseMaterialUseOutStore',
+          meta: { title: '浏览领用出库', noCache: true, activeMenu: '/material/useout', moduleState: 'browse' },
           hidden: true
         }
       ]

@@ -11,7 +11,7 @@
       <template v-slot:actions>
         <el-table-column align="center" width="160">
           <template slot-scope="scope">
-            <router-link :to="'/material/out/edit/'+scope.row.ID">
+            <router-link :to="'/material/out/browse/'+scope.row.ID">
               <el-button type="primary" size="mini">
                 浏览
               </el-button>

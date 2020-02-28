@@ -3,6 +3,7 @@
     <el-card
       v-loading="loading"
       class="box-card"
+      style="height:calc(100vh-10px)"
     >
       <div slot="header" class="clearfix">
         <!-- 工具栏 -->
@@ -50,14 +51,14 @@
                 foreign-key="CustomerID"
               />
             </el-form-item>
+            <el-form-item label="客户编号">
+              <el-input v-model="mainData.CustomerID_Code" disabled />
+            </el-form-item>
             <el-form-item label="业务员">
               <el-input v-model="mainData.Salesman" />
             </el-form-item>
             <el-form-item label="客户PO">
               <el-input v-model="mainData.CustomerPO" />
-            </el-form-item>
-            <el-form-item label="客户编号">
-              <el-input v-model="mainData.CustomerID_Code" controls-position="right" />
             </el-form-item>
             <el-form-item label="备注">
               <el-input
@@ -100,7 +101,8 @@
             :data="tableData"
             border
             stripe
-            height="500"
+            size="small"
+            height="680"
           >
             <af-table-column
               type="index"
@@ -181,7 +183,7 @@
     </el-dialog>
 
     <!-- 选择数据对话框 -->
-    <el-transfer-dialog :visible.sync="choiceDialogVisible" @success="handleSuccess" />
+    <el-transfer-dialog :visible.sync="choiceDialogVisible" :columns="transferDialogOptions.columns" @success="handleSuccess" />
   </section>
 </template>
 
@@ -199,8 +201,8 @@ const main = {
   'ID': '',
   'BillCode': '',
   'InStoreDate': '',
-  'VendorID': '',
-  'VendorID_Name': '',
+  'CustomerID': '',
+  'CustomerID_Name': '',
   'Buyer': '',
   'DeliveryNum': '',
   'TaxRate': 0,
@@ -261,7 +263,20 @@ export default {
       },
       tempRoute: {},
 
-      choiceDialogVisible: false
+      choiceDialogVisible: false,
+      // 选择单据的对话框配置
+      transferDialogOptions: {
+        columns: [
+          { field: 'ProductID_ProductCode', align: '', title: '货品编号', width: 100 },
+          { field: 'ProductID_ProductName', align: '', title: '货品名称', width: 100 },
+          { field: 'ProductID_ProductCategoryID_Name', align: '', title: '货品类别', width: 100 },
+          { field: 'ProductID_ProductSpec', align: '', title: '货品规格', width: 100 },
+          { field: 'ProductID_Unit', align: '', title: '基本单位', width: 100 },
+          { field: 'BatNo', align: '', title: '批号', width: 100 },
+          { field: 'MaterialWareHouseID_Name', align: '库位', title: '', width: 100 },
+          { field: 'Quantity', align: '', title: '库存数量', width: 100 }
+        ]
+      }
     }
   },
   computed: {
@@ -342,7 +357,7 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          // console.log('error submit!!')
           return false
         }
       })

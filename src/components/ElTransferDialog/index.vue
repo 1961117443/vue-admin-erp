@@ -14,12 +14,11 @@
       :modal="true"
       @closed="$emit('update:visible', false)"
     >
-
+      <div slot="title">
+        <!-- 查询面板 -->
+        <el-query-panel :fields="fields" :loading="remoteLoading" @search="onSearch" />
+      </div>
       <div v-loading="remoteLoading">
-        <div slot="title">
-          <el-query-panel :fields="fields" @search="onSearch" />
-        </div>
-
         <el-table
           ref="source"
           :data="sourceTable"
@@ -34,14 +33,7 @@
         >
           <af-table-column type="index" fixed="left" label="序号" />
           <af-table-column type="selection" fixed="left" width="35" />
-          <af-table-column min-width="100" prop="ProductID_ProductCode" label="货品编号" />
-          <af-table-column min-width="100" prop="ProductID_ProductName" label="货品名称" />
-          <af-table-column min-width="100" prop="ProductID_ProductCategoryID_Name" label="货品类别" />
-          <af-table-column min-width="100" prop="ProductID_ProductSpec" label="货品规格" />
-          <af-table-column min-width="100" prop="ProductID_Unit" label="基本单位" />
-          <af-table-column min-width="100" prop="BatNo" label="批号" />
-          <af-table-column min-width="100" prop="MaterialWareHouseID_Name" label="库位" />
-          <af-table-column min-width="100" prop="Quantity" label="库存数量" />
+          <af-table-column v-for="item in columns" :key="item.field" min-width="100" :prop="item.field" :label="item.title" />
         </el-table>
 
         <div class="transfer-controls">
@@ -53,6 +45,7 @@
               @click="handleAdd"
             />
             <el-button
+              v-show="false"
               icon="el-icon-arrow-up"
               type="danger"
               size="mini"
@@ -74,15 +67,21 @@
         stripe
         height="25vh"
         size="mini"
+        :highlight-current-row="true"
       >
         <af-table-column type="index" fixed="left" label="序号" />
-        <af-table-column min-width="100" prop="ProductID_ProductCode" label="货品编号" />
-        <af-table-column min-width="100" prop="ProductID_ProductName" label="货品名称" />
-        <af-table-column min-width="100" prop="ProductID_ProductCategoryID_Name" label="货品类别" />
-        <af-table-column min-width="100" prop="ProductID_ProductSpec" label="货品规格" />
-        <af-table-column min-width="100" prop="ProductID_Unit" label="基本单位" />
-        <af-table-column min-width="100" prop="BatNo" label="批号" />
-        <af-table-column min-width="100" prop="MaterialWareHouseID_Name" label="库位" />
+        <el-table-column width="50">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              @click.native.prevent="deleteRow(scope.$index, choiceTable)"
+            >
+              移除
+            </el-button>
+          </template>
+        </el-table-column>
+        <af-table-column v-for="item in columns" :key="item.field" min-width="100" :prop="item.field" :label="item.title" />
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="innerVisible = false">取 消</el-button>
@@ -101,7 +100,13 @@ export default {
   name: 'ElTransferDialog',
   components: { Pagination, ElQueryPanel },
   props: {
-    visible: Boolean
+    visible: Boolean,
+    columns: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   },
   data() {
     return {
@@ -175,16 +180,17 @@ export default {
         this.AddOne(row)
       })
     },
-    handleDblclick(row) {
-      this.$refs['source'].selection.some(item => {
-        if (item.ID === row.ID) {
-          this.AddOne(row)
-          return true
-        }
-      })
+    deleteRow(index, rows) {
+      rows.splice(index, 1)
     },
-    handleKeyup(data) {
-      console.log(data)
+    handleDblclick(row) {
+      this.AddOne(row)
+      // this.$refs['source'].selection.some(item => {
+      //   if (item.ID === row.ID) {
+      //     this.AddOne(row)
+      //     return true
+      //   }
+      // })
     },
     AddOne(row) {
       var index = this.choiceTable.findIndex(item => item.InID === row.ID)

@@ -5,7 +5,7 @@
         <el-query-item :field-list="Fields" :param="param" /></el-form-item>
       <el-form-item>
         <el-button-group style="vertical-align:inherit;">
-          <el-button type="primary" plain icon="el-icon-search" @click="onSubmit">查询</el-button>
+          <el-button type="primary" plain icon="el-icon-search" :loading="loading" @click="onSubmit">查询</el-button>
           <el-button type="primary" :size="size" plain icon="el-icon-more" @click="showAdvanceForm" />
         </el-button-group>
       </el-form-item>
@@ -93,7 +93,8 @@ export default {
       default() {
         return []
       }
-    }
+    },
+    loading: Boolean
   },
   data() {
     return {
