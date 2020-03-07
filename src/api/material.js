@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = 'http://localhost:8090'
+const baseURL = process.env.VUE_APP_BASE_API
 
 /**
  * 根据id获取入库单主表数据接口

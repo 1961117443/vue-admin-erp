@@ -1,7 +1,7 @@
 
 import request from '@/utils/request'
 
-const baseURL = 'http://localhost:8090'
+const baseURL = process.env.VUE_APP_BASE_API
 // console.log(request)
 export function ApiLockRecord(param) {
   return request({

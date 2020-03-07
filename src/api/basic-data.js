@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getMaterialWarehouseOptions() {
   return request({
-    url: 'http://localhost:8090/api/MaterialWarehouse',
+    url: `${process.env.VUE_APP_BASE_API}/api/MaterialWarehouse`,
     method: 'get'
   })
 }
