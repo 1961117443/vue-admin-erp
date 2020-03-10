@@ -22,7 +22,6 @@ const actions = {
         resolve(state.moduleConfigs[tableName])
       } else {
         request({
-          baseURL: 'http://localhost:8090',
           url: `/api/ModuleConfigs/${tableName}`
         }).then(res => {
           commit('SET_MODULE_CONFIGS', { key: tableName, data: res.data })

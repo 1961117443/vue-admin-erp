@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 
-const baseURL = process.env.VUE_APP_BASE_API
 export function login(data) {
   return request({
     // url: '/vue-admin-template/user/login',

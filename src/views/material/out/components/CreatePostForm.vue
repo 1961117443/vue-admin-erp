@@ -47,7 +47,7 @@
               <el-select-table
                 v-model="mainData.CustomerID_Name"
                 :data="mainData"
-                url="http://localhost:8090/api/ModuleConfigs/MaterialPurchase/VendorID"
+                url="api/ModuleConfigs/MaterialSalesOut/CustomerID"
                 foreign-key="CustomerID"
               />
             </el-form-item>
@@ -193,9 +193,10 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import ElSelectTable from '@/components/ElSelectTable'
 import ElTransferDialog from '@/components/ElTransferDialog'
 
-import { ApiMaterialSalesOut, ApiMaterialSalesOutDetail, ApiPostMaterialPurchase } from '@/api/material'
+import { ApiMaterialSalesOut, ApiMaterialSalesOutDetail } from '@/api/material'
 import { form } from '@/mixins/form'
 import { parseTime } from '@/utils/index.js'
+import request from '@/utils/request'
 
 const main = {
   'ID': '',
@@ -244,7 +245,7 @@ export default {
       activeName: 'master',
       tableData: [],
       loading: false,
-      mainData: {},
+      mainData: Object.assign({}, main),
       rules: {
         BillCode: [{ required: true, message: '必填', trigger: 'blur' }],
         InStoreDate: [{ required: true, message: '必填' }],
@@ -295,21 +296,27 @@ export default {
           }
         })
         if (!this.IsBrowse) {
-          list.push({ id: '123456789', title: '选择库存', command: 'handleSelectStock' })
+          // list.push({ id: '123456789', title: '选择库存', command: 'handleSelectStock' })
         }
       }
       return list
     }
   },
   created() {
+    this.initData()
     if (this.IsEdit || this.IsBrowse) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     } else if (this.IsAdd) {
-      this.mainData = Object.assign({}, main)
+     // this.mainData = Object.assign({}, main)
     }
   },
   methods: {
+    // 初始化表
+    initData() {
+      this.mainData = Object.assign({}, main)
+      this.tableData.splice(0, this.tableData.length)
+    },
     // 调用api获取入库单数据
     fetchData(id) {
       this.loading = true
@@ -326,13 +333,13 @@ export default {
     },
     // 新增按钮
     handleAdd() {
-      this.$router.push(`/material/in/create`)
+      this.$router.push(`/material/out/create`)
     },
     // 编辑按钮
     handleEdit() {
       this.lockRecord().then(res => {
         if (res) {
-          this.$router.push(`/material/in/edit/${this.id}`)
+          this.$router.push(`/material/out/edit/${this.id}`)
         }
       })
     },
@@ -343,7 +350,11 @@ export default {
           this.loading = true
           this.mainData.detail = this.tableData
           this.handleObject(this.mainData)
-          ApiPostMaterialPurchase(this.mainData).then(res => {
+          request({
+            url: `/api/MaterialSalesOut`,
+            method: 'post',
+            data: this.mainData
+          }).then(res => {
             const msg = res.data ? res.data : '录入成功'
             this.$notify({
               title: '成功',
@@ -351,8 +362,13 @@ export default {
               type: 'success',
               duration: 2000
             })
-            // 跳转到浏览页面
-            this.$router.push(`/material/in/browse/${this.id}`)
+            if (this.IsAdd) {
+              this.initData()
+            }
+            else {
+              // 跳转到浏览页面
+              this.$router.push(`/material/in/browse/${this.id}`)
+            }
           }).finally(() => {
             this.loading = false
           })
@@ -438,15 +454,12 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/width.scss";
 .app-container{
-  .box-card{
-    .tool-bar{
-    //   border: 1px;
-    //   margin-bottom: 10px;
-    }
-  }
-  .item-form-container{
-    // width: 800px;
-  }
+  // .box-card{
+  //   .tool-bar{
+  //   }
+  // }
+  // .item-form-container{
+  // }
   .row-bg{
       background-color: #f9fafc;
   }

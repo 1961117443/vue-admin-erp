@@ -96,7 +96,7 @@ service.interceptors.response.use(
         const refresh_token = getRefreshToken()
         return new Promise((resolve, reject) => {
           return axios.get('api/user/refresh-token', {
-            baseURL: 'http://localhost:8090',
+            baseURL: process.env.VUE_APP_BASE_API,
             params: {
               token: getToken()
             },
@@ -128,11 +128,15 @@ service.interceptors.response.use(
               // 还是未授权状态 跳转至登录页面
               if (err.response.status === 401) {
                 console.log('refresh_token也过期了，只好重新登录:' + refresh_token)
-                console.log(err.response)
-                toLogin()
+                // console.log(err.response)
+                return store.dispatch('user/logout').then(() => {
+                  toLogin()
+                  // reject()
+                })
               }
             }
-            reject()
+            console.log('reject')
+            reject(err)
           })
         })
       }
