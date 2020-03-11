@@ -50,8 +50,9 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
       // 200000 到 30000 是 api 执行成功 但是执行结果不符合预期 自定义的错误信息
-      if (res.code > 200000 && res.code < 30000) {
-        if (res.data instanceof String) {
+      if (res.code > 200000 && res.code < 300000) {
+        console.log(typeof res.data)
+        if ((typeof res.data) === 'string') {
           Message({
             message: res.data || 'Error',
             type: 'error',
@@ -154,10 +155,12 @@ service.interceptors.response.use(
 
 const toLogin = function() {
   let path = router.app.$route.fullPath
-  if (path !== '/') {
-    path = `/login?redirect=${router.app.$route.fullPath}`
-  } else {
-    path = `/login`
+  if (!path.startsWith('/login?redirect=')) {
+    if (path !== '/') {
+      path = `/login?redirect=${router.app.$route.fullPath}`
+    } else {
+      path = `/login`
+    }
   }
   console.log(path)
   router.push(path)

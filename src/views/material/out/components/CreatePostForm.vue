@@ -116,7 +116,7 @@
             <af-table-column min-width="100" prop="ProductID_Unit" label="基本单位" />
             <af-table-column min-width="100" prop="BatNo" label="批号" />
             <af-table-column min-width="100" prop="MaterialWareHouseID_Name" label="库位" />
-            <af-table-column min-width="100" prop="TotalQuantity" label="出库数量">
+            <af-table-column width="100" prop="TotalQuantity" label="出库数量">
               <template slot-scope="{ row }">
                 <el-input-number
                   v-show="!IsBrowse"
@@ -130,7 +130,7 @@
                 <span v-show="IsBrowse">{{ row.TotalQuantity }}</span>
               </template>
             </af-table-column>
-            <af-table-column min-width="100" prop="Price" label="单价">
+            <af-table-column width="100" prop="Price" label="单价">
               <template slot-scope="{ row }">
                 <el-input-number
                   v-show="!IsBrowse"
@@ -308,7 +308,7 @@ export default {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     } else if (this.IsAdd) {
-     // this.mainData = Object.assign({}, main)
+    // this.mainData = Object.assign({}, main)
     }
   },
   methods: {
@@ -364,10 +364,9 @@ export default {
             })
             if (this.IsAdd) {
               this.initData()
-            }
-            else {
+            } else {
               // 跳转到浏览页面
-              this.$router.push(`/material/in/browse/${this.id}`)
+              this.$router.push(`/material/out/browse/${this.id}`)
             }
           }).finally(() => {
             this.loading = false

@@ -1,8 +1,9 @@
 <template>
   <div class="query-panel-container">
-    <el-form :inline="true" :model="advSearchForm" class="demo-form-inline" :size="size">
+    <el-form :inline="true" :model="advSearchForm" class="form-inline" :size="size">
       <el-form-item>
-        <el-query-item :field-list="Fields" :param="param" /></el-form-item>
+        <el-query-item :field-list="Fields" :param="param" />
+      </el-form-item>
       <el-form-item>
         <el-button-group style="vertical-align:inherit;">
           <el-button type="primary" plain icon="el-icon-search" :loading="loading" @click="onSubmit">查询</el-button>
@@ -168,5 +169,14 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.query-panel-container {
+.el-form-item {
+    margin-bottom: 0px;
+  }
+
+  .el-form--inline .el-form-item {
+    margin-right: 0px;
+  }
 }
 </style>

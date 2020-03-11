@@ -81,6 +81,12 @@ export default {
         return []
       }
     },
+    tableData: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     // eslint-disable-next-line vue/require-default-prop
     remoteUrl: String
   },
