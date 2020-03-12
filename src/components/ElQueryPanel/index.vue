@@ -128,13 +128,17 @@ export default {
     onSubmit() {
       const params = []
       if (this.dialogVisible) {
+        this.advSearchForm.params.forEach(item => {
+          item.join = this.advSearchForm.logicOption
+        })
         Object.assign(params, this.advSearchForm.params)
+
         this.dialogVisible = false
       } else {
         params.push(Object.assign({}, this.param))
       }
       // console.log()
-      this.$emit('search', { data: params })
+      this.$emit('search', { params: params })
     },
     // 显示高级查询
     showAdvanceForm() {

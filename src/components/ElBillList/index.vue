@@ -1,13 +1,18 @@
 <template>
-  <section v-loading="listLoading" class="bill-list-container">
-    <sticky :z-index="10" :class-name="'sub-navbar'">
+  <el-card
+    class="box-card  bill-list-container"
+    style="height:calc(100vh-10px)"
+  >
+    <div slot="header" class="clearfix">
       <div v-show="$slots.toolbar" class="toolbar-container">
         <slot name="toolbar" />
       </div>
-    </sticky>
+    <!-- <span>卡片名称</span>
+    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
+    </div>
     <div class="bill-list-grid-container">
       <el-table
-        :data="list"
+        :data="tableData"
         element-loading-text="Loading"
         size="mini"
         border
@@ -20,7 +25,7 @@
             {{ scope.$index + 1 }}
           </template>
         </el-table-column>
-        <af-table-column v-for="(item,index) in columns" :key="index" :label="item.title" :prop="item.field" align="center" />
+        <af-table-column v-for="(item,index) in table.columns" :key="index" :label="item.title" :prop="item.field" align="center" />
 
         <slot name="actions" />
         <!-- <el-table-column align="center" width="160">
@@ -48,25 +53,59 @@
         </el-table-column> -->
       </el-table>
       <pagination
-        v-show="listQuery.total>0"
-        :total="listQuery.total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
+        v-show="table.total>0"
+        :total="table.total"
+        :page.sync="pagination.page"
+        :limit.sync="pagination.limit"
         @pagination="getList"
       />
     </div>
-  </section>
+  </el-card>
+
+  <!-- <section class="bill-list-container">
+    <sticky :z-index="10" :class-name="'sub-navbar'">
+      <div v-show="$slots.toolbar" class="toolbar-container">
+        <slot name="toolbar" />
+      </div>
+    </sticky>
+    <div class="bill-list-grid-container">
+      <el-table
+        :data="tableData"
+        element-loading-text="Loading"
+        size="mini"
+        border
+        fit
+        highlight-current-row
+        :height="gridHeight"
+      >
+        <el-table-column align="center" label="序号" width="50">
+          <template slot-scope="scope">
+            {{ scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <af-table-column v-for="(item,index) in table.columns" :key="index" :label="item.title" :prop="item.field" align="center" />
+
+        <slot name="actions" />
+      </el-table>
+      <pagination
+        v-show="table.total>0"
+        :total="table.total"
+        :page.sync="pagination.page"
+        :limit.sync="pagination.limit"
+        @pagination="getList"
+      />
+    </div>
+  </section> -->
 </template>
 
 <script>
-import request from '@/utils/request'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import Sticky from '@/components/Sticky' // 粘性header组件
+// import Sticky from '@/components/Sticky' // 粘性header组件
 import { parseTime } from '@/utils/index.js'
 export default {
   name: 'BillList',
   components: {
-    Pagination, Sticky
+    Pagination
   },
   filters: {
     parseTime(date, cFormat) {
@@ -75,31 +114,28 @@ export default {
     }
   },
   props: {
-    columns: {
-      type: Array,
-      default: function() {
-        return []
-      }
-    },
-    tableData: {
-      type: Array,
+    pagination: {
+      type: Object,
       default() {
-        return []
+        return {
+          page: 1,
+          limit: 20
+        }
       }
     },
-    // eslint-disable-next-line vue/require-default-prop
-    remoteUrl: String
+    table: {
+      type: Object,
+      default() {
+        return {
+          data: [],
+          total: 0,
+          columns: []
+        }
+      }
+    }
   },
   data: function() {
     return {
-      loading: false,
-      list: null,
-      listLoading: true,
-      listQuery: {
-        total: 0,
-        page: 1,
-        limit: 20
-      },
       toolBarList: [
         // disabledStatus -- 1：未审核 2：已审核
         { icon: 'el-icon-edit', disabled: false, command: 'handleEdit', title: '编辑', disableStatus: 8 },
@@ -110,38 +146,27 @@ export default {
       gridHeight: 0
     }
   },
+  computed: {
+    tableData() {
+      // console.log(this.table.data)
+      return this.table.data
+    }
+  },
   created() {
-    this.getList()
+    // this.getList()
   },
   mounted() {
     this.$nextTick(() => {
       const clientHeight = document.documentElement.clientHeight
-      this.gridHeight = clientHeight - 200
+      this.gridHeight = clientHeight - 300
     })
     // console.log(this.$slots)
     // console.log(clientHeight)
   },
   methods: {
     getList() {
-      this.fetchData()
-    },
-    fetchData() {
-      this.listLoading = true
-      const ps = Object.assign({}, this.listQuery)
-      delete ps.total
-      request({
-        baseURL: 'http://localhost:8090',
-        url: this.remoteUrl,
-        params: ps
-      })
-        .then(response => {
-          if (response.data) {
-            this.list = response.data.data
-            this.listQuery.total = response.data.total
-          }
-        }).finally(() => {
-          this.listLoading = false
-        })
+      // this.fetchData()
+      this.$emit('page-change', this.pagination)
     },
     handleCommand() {
       console.log(this['handleEdit'])
@@ -152,15 +177,15 @@ export default {
 
 <style lang="scss" scoped>
   .bill-list-container{
-    .toolbar-container{
-      background-color: #f4f4f5;
-      padding: 5px 0;
-      // .el-alert{
-      //   padding: 0 0;
-      // }
-    }
-    .bill-list-grid-container{
-      margin: 5px 0 ;
-    }
+    // .toolbar-container{
+    //   background-color: #f4f4f5;
+    //   padding: 5px 0;
+    //   // .el-alert{
+    //   //   padding: 0 0;
+    //   // }
+    // }
+    // .bill-list-grid-container{
+    //   margin: 5px 0 ;
+    // }
   }
 </style>

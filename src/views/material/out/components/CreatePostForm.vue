@@ -274,7 +274,7 @@ export default {
           { field: 'ProductID_ProductSpec', align: '', title: '货品规格', width: 100 },
           { field: 'ProductID_Unit', align: '', title: '基本单位', width: 100 },
           { field: 'BatNo', align: '', title: '批号', width: 100 },
-          { field: 'MaterialWareHouseID_Name', align: '库位', title: '', width: 100 },
+          { field: 'MaterialWareHouseID_Name', align: '', title: '库位', width: 100 },
           { field: 'Quantity', align: '', title: '库存数量', width: 100 }
         ]
       }
