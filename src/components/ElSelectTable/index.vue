@@ -6,6 +6,7 @@
       placement="bottom-start"
       trigger="manual"
       :visible-arrow="false"
+      :width="PopupWidth"
       @after-leave="afterLeave"
     >
       <div
@@ -94,6 +95,7 @@ export default {
       remoteLoading: false,
       currentValue: this.value,
       popupVisible: false,
+      // popupWidth: 300,
       tableData: [],
       currentItem: {},
       lastQueryValue: 'lastQueryValue',
@@ -111,6 +113,15 @@ export default {
       const id = this.data[this.foreignKey]
       // console.log(id)
       return id
+    },
+    PopupWidth() {
+      let w = 300
+      if (this.$refs.selectTableInput && this.$refs.selectTableInput.$el && this.$refs.selectTableInput.$el.offsetWidth) {
+        if (this.$refs.selectTableInput.$el.offsetWidth > 300) {
+          w = this.$refs.selectTableInput.$el.offsetWidth
+        }
+      }
+      return w
     }
   },
   watch: {
@@ -143,6 +154,9 @@ export default {
       this.tableConfig = Object.assign({}, this.config)
       this.fetchOrigin()
     }
+  },
+  mounted() {
+
   },
   methods: {
     ApiTableData(params) {

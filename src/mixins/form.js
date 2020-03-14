@@ -1,6 +1,6 @@
 
 import { RecordLock } from '@/mixins/record-lock'
-import request from '@/utils/request'
+// import request from '@/utils/request'
 import states from '@/utils/data-status'
 /**
  * 表单属性 事件

@@ -90,24 +90,25 @@ const materialRouters = {
     {
       path: 'useout',
       name: 'MaterialUseOut',
+      redirect: '/material/useout/list',
       component: () => import('@/views/material/useout/index'),
-      meta: { icon: 'table', tableName: 'MaterialUseOutStore', title: '领用出库' },
+      meta: { icon: 'table', tableName: 'MaterialUseOutStore', title: '领用出库', uid: '5D1F2C0B-5A57-4579-8517-D248F991775C' },
       children: [
-        // {
-        //   path: 'list',
-        //   component: () => import('@/views/material/useout/list'),
-        //   name: 'ListMaterialUseOutStore',
-        //   meta: {
-        //     title: '销售出库',
-        //     keepAlive: true // 需要被缓存
-        //   },
-        //   hidden: true
-        // },
+        {
+          path: 'list',
+          component: () => import('@/views/material/useout/components/list'),
+          name: 'ListMaterialUseOutStore',
+          meta: {
+            title: '单据列表', activeMenu: '/material/useout',
+            keepAlive: true // 需要被缓存
+          },
+          hidden: true
+        },
         {
           path: 'create',
           component: () => import('@/views/material/useout/components/CreatePostForm'),
           name: 'CreateMaterialUseOutStore',
-          meta: { title: '新增领用出库', icon: 'edit', activeMenu: '/material/useout', moduleState: 'add' },
+          meta: { title: '新增领用出库', activeMenu: '/material/useout', moduleState: 'add' },
           hidden: true
         },
         {

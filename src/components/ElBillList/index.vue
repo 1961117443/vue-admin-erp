@@ -176,16 +176,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bill-list-container{
-    // .toolbar-container{
-    //   background-color: #f4f4f5;
-    //   padding: 5px 0;
-    //   // .el-alert{
-    //   //   padding: 0 0;
-    //   // }
-    // }
-    // .bill-list-grid-container{
-    //   margin: 5px 0 ;
-    // }
-  }
+  // .bill-list-container{
+  //   // .toolbar-container{
+  //   //   background-color: #f4f4f5;
+  //   //   padding: 5px 0;
+  //   //   // .el-alert{
+  //   //   //   padding: 0 0;
+  //   //   // }
+  //   // }
+  //   // .bill-list-grid-container{
+  //   //   margin: 5px 0 ;
+  //   // }
+  // }
 </style>
