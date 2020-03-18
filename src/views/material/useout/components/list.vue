@@ -1,5 +1,6 @@
 <template>
   <el-card
+    v-loading="listLoading"
     class="form-container"
     style="height:calc(100vh-50px);"
   >
@@ -30,7 +31,7 @@
                 浏览
               </el-button>
             </router-link>
-            <!-- v-show="scope.row.Status" -->
+            <!-- v-show="scope.row.DataStatus" -->
             <el-dropdown szie="small" trigger="click" @command="handleCommand">
               <el-button size="mini" type="info" plain>
                 操作
@@ -40,7 +41,7 @@
                 <el-dropdown-item
                   v-for="(item,index) in toolBarList"
                   :key="index"
-                  :disabled="(item.disableStatus & scope.row.Status) === scope.row.Status"
+                  :disabled="(item.disableStatus & scope.row.DataStatus) === scope.row.DataStatus"
                   :icon="item.icon"
                   :command="{ row:scope.row,command:item.command }"
                 >{{ item.title }}</el-dropdown-item></el-dropdown-menu>
@@ -162,20 +163,7 @@ export default {
       }
     },
     handleEdit(data) {
-      // console.log(data)
       this.$router.push(`/material/useout/edit/${data.ID}`)
-      // this.audit().then(res => {
-      //   return setTimeout(() => {
-      //     console.log('audit')
-      //     return Promise.resolve('ok')
-      //   }, 1000)
-      // })
-      // this.audit(res => {
-      //   setTimeout(() => {
-      //     console.log('audit')
-      //     return 'ok'
-      //   }, 1500)
-      // })
     },
     // 删除订单
     handleDelete(data) {
@@ -203,22 +191,37 @@ export default {
       const cmd = { command: 'handleAudit', data: data }
       this.$parent.handleCommand(cmd)
       const id = data.ID
-      this.$confirm(`确认审核入库单[${data.BillCode}]吗？`, '确认信息', {
+      this.$confirm(`确认审核出库单[${data.BillCode}]吗？`, '确认信息', {
         type: 'warning'
       })
         .then(_ => {
           this.listLoading = true
           request({
-            url: `api/MaterialSalesOut/audit/${id}`,
+            url: `api/MaterialUseOutStore/audit/${id}`,
             method: 'post'
           }).then(res => {
             data = Object.assign(data, res.data)
-            this.$notify({
-              title: '成功',
-              message: '审核成功！',
-              type: 'success',
-              duration: 2000
-            })
+          }).finally(() => {
+            this.listLoading = false
+          })
+        })
+        .catch(_ => {})
+        .finally(() => {
+          this.unLockRecord({ id })
+        })
+    },
+    handleUnAudit(data) {
+      const id = data.ID
+      this.$confirm(`确认反审出库单[${data.BillCode}]吗？`, '确认信息', {
+        type: 'warning'
+      })
+        .then(_ => {
+          this.listLoading = true
+          request({
+            url: `api/MaterialUseOutStore/unaudit/${id}`,
+            method: 'post'
+          }).then(res => {
+            data = Object.assign(data, res.data)
           }).finally(() => {
             this.listLoading = false
           })

@@ -5,10 +5,21 @@
     style="height:calc(100vh-50px);"
   >
     <div slot="header" class="clearfix">
-      <router-link to="/material/useout/create">
+      <!-- <router-link to="/material/useout/create">
         <el-button type="success">新增</el-button>
       </router-link>
-      <el-button type="success" @click="post">保存</el-button>
+      <el-button type="success" @click="post">保存</el-button> -->
+      <!-- 工具栏 -->
+      <div v-show="toolBarList.length>0" class="tool-bar">
+        <el-button
+          v-for="item in toolBarList"
+          :key="item.id"
+          :icon="item.icon"
+          @click="handleToolbarClick(item.command)"
+        >
+          {{ item.title }}
+        </el-button>
+      </div>
     </div>
     <!-- 主表信息 -->
     <el-form
@@ -142,7 +153,7 @@
             size="small"
             style="width:100%;"
           />
-          <span v-show="IsBrowse">{{ row.Price }}</span>
+          <span v-show="IsBrowse">{{ row.ItRemark }}</span>
         </template>
       </af-table-column>
       <af-table-column
@@ -271,8 +282,8 @@ export default {
         if (this.mainData.hasOwnProperty('states')) {
           status = status | this.mainData['states']
         }
-        if (this.moduleConfigs.toolbars) {
-          this.moduleConfigs.toolbars.forEach(item => {
+        if (this.module.toolBarList) {
+          this.module.toolBarList.forEach(item => {
           // console.log(item)
           // console.log(`${item.title} ----- ${item.status} & ${status} === ${item.status} ----- ${(item.status & status) === status}`)
             if ((item.status & status) === status) {

@@ -63,6 +63,13 @@ export default {
             { field: 'AuditDate', title: '审核时间' }
           ]
         },
+        toolBarList: [
+        // disabledStatus -- 1：未审核 2：已审核
+          { icon: 'el-icon-edit', disabled: false, command: 'handleEdit', title: '编辑', disableStatus: 8 },
+          { icon: 'el-icon-delete', disabled: false, command: 'handleDelete', title: '删除', disableStatus: 8 },
+          { icon: 'el-icon-check', disabled: false, command: 'handleAudit', title: '审核', disableStatus: 8 },
+          { icon: 'el-icon-close', disabled: false, command: 'handleUnAudit', title: '反审', disableStatus: 1 }
+        ],
         detail: {
           columns: [
             { field: 'ProductID_ProductCode', title: '货品编号' },

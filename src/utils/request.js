@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox, Message, Notification } from 'element-ui'
 import store from '@/store'
 import { getToken, getRefreshToken } from '@/utils/auth'
 import router from '@/router'
@@ -49,16 +49,21 @@ service.interceptors.response.use(
     // console.log('response.data:' + res)
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
+      if (res.code === 20041) {
+        Message({
+          message: res.msg || '',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return res
+      }
       // 200000 到 30000 是 api 执行成功 但是执行结果不符合预期 自定义的错误信息
       if (res.code > 200000 && res.code < 300000) {
-        console.log(typeof res.data)
-        if ((typeof res.data) === 'string') {
-          Message({
-            message: res.data || 'Error',
-            type: 'error',
-            duration: 5 * 1000
-          })
-        }
+        Message({
+          message: `Error:code=${res.code}`,
+          type: 'error',
+          duration: 5 * 1000
+        })
         return res
       }
       // console.log('response:' + res)
@@ -67,7 +72,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      console.log(res)
+      // console.log(res)
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
@@ -83,6 +88,14 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      if (res.msg && res.msg !== '') {
+        Notification({
+          title: '成功',
+          message: res.msg,
+          type: 'success',
+          duration: 2000
+        })
+      }
       return res
     }
   },
@@ -162,7 +175,8 @@ const toLogin = function() {
       path = `/login`
     }
   }
-  console.log(path)
+  // console.log(path)
   router.push(path)
 }
+
 export default service

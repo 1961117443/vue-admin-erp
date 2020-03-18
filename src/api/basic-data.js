@@ -7,26 +7,56 @@ export function getMaterialWarehouseOptions() {
   })
 }
 
-// import axios from 'axios'
+export function getProductCateoryList(params) {
+  return request({
+    url: 'api/ProductCategory',
+    method: 'get',
+    params: params
+  })
+}
+export function getProductCateory(id) {
+  return request({
+    url: `api/ProductCategory/${id}`,
+    method: 'get'
+  })
+}
+export function postProductCateory(data) {
+  return request({
+    url: 'api/ProductCategory',
+    method: 'post',
+    data: data
+  })
+}
+export function delProductCateory(id) {
+  return request({
+    url: `api/ProductCategory/delete/${id}`,
+    method: 'post'
+  })
+}
 
-// const service = axios.create({
-//   baseURL: 'http://localhost:8090', // url = base url + request url
-//   // withCredentials: true, // send cookies when cross-domain requests
-//   timeout: 50000 // request timeout
-// })
-
-// export function getMaterialWarehouseOptions(params) {
-// //   const req = service.get({
-// //     url: '/api/MaterialWarehouse',
-// //     method: 'get',
-// //     params
-// //   })
-//   return axios.create({
-//     baseURL: 'http://localhost:8090', // url = base url + request url
-//     // withCredentials: true, // send cookies when cross-domain requests
-//     timeout: 50000, // request timeout
-//     url: '/api/MaterialWarehouse',
-//     method: 'get',
-//     params
-//   })
-// }
+export function getProductList(params) {
+  return request({
+    url: 'api/Product',
+    method: 'get',
+    params: params
+  })
+}
+export function getProduct(id) {
+  return request({
+    url: `api/Product/${id}`,
+    method: 'get'
+  })
+}
+export function postProduct(data) {
+  return request({
+    url: 'api/Product',
+    method: 'post',
+    data: data
+  })
+}
+export function delProduct(id) {
+  return request({
+    url: `api/Product/delete/${id}`,
+    method: 'post'
+  })
+}

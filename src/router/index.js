@@ -57,7 +57,10 @@ export const constantRoutes = [
     }]
   },
   basicDataRouters,
-  materialRouters,
+  materialRouters
+]
+
+export const constantTestRoutes = [
   {
     path: '/example',
     component: Layout,
@@ -161,11 +164,21 @@ export const constantRoutes = [
       }
     ]
   },
-  { path: '/test', hidden: true, component: () => import('@/views/test.vue') },
+  { path: '/test', hidden: true, component: () => import('@/views/test.vue') }
+]
 
+console.log(process.env)
+if (process.env.NODE_ENV === 'development') {
+  // console.log(1)
+  constantTestRoutes.forEach(route => {
+    constantRoutes.push(route)
+  })
+}
+
+constantRoutes.push(
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
-]
+)
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
