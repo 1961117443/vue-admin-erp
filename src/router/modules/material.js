@@ -132,6 +132,12 @@ const materialRouters = {
       name: 'MaterialStore',
       component: () => import('@/views/material/store/list'),
       meta: { title: '材料库存', icon: 'table' }
+    },
+    {
+      path: 'useout-return',
+      name: 'MaterialUseOutStoreReturn',
+      component: () => import('@/views/material/ureturn/index'),
+      meta: { icon: 'table', tableName: 'MaterialUseOutStoreReturn', title: '领用退回', uid: '5D1F2C0B-5A57-4579-8517-D248F991775C' }
     }
   ]
 }

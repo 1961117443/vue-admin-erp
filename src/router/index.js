@@ -167,7 +167,7 @@ export const constantTestRoutes = [
   { path: '/test', hidden: true, component: () => import('@/views/test.vue') }
 ]
 
-console.log(process.env)
+// console.log(process.env)
 if (process.env.NODE_ENV === 'development') {
   // console.log(1)
   constantTestRoutes.forEach(route => {

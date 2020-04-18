@@ -4,7 +4,7 @@
       v-loading="listLoading"
     >
       <div slot="header" class="clearfix">
-        <el-button type="success" @click="dialog = true">新增</el-button>
+        <el-button type="success" @click="onAdd">新增</el-button>
       </div>
       <el-table
         :data="list"
@@ -124,6 +124,10 @@ export default {
         this.list = response.data
         this.listLoading = false
       })
+    },
+    onAdd() {
+      this.form = Object.assign({}, table)
+      this.dialog = true
     },
     onEdit(row) {
       this.form = Object.assign({}, row)
